@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Isolated Showers</title>
+    <style>
+
+    html, body { margin: 0; padding: 0; }
+    body { background-color: #252628; }
+
+    #sky
+    {
+        position: relative;
+        height: 80vh;
+        overflow: hidden;
+        width: 100%;
+    }
+
+    .drop
+    {
+        position: absolute;
+        border-right: #e6e9ee solid 1px;
+        animation-name: beginFall;
+        animation-duration: 2.4s;
+        animation-timing-function: cubic-bezier(0.21, 0.04, 0.38, 0.14);
+        animation-delay: 0s;
+        animation-iteration-count: infinite;
+    }
+
+    @keyframes beginFall
+    {
+        from {
+            top: -2%;
+            height: 16px;
+        }
+
+        30% {
+            height: 20px;
+        }
+
+        to {
+            top: 100%;
+            height: 20px;
+        }
+    }
+    
+    </style>
+    <script>
+
+    class IsolatedShower
+    {
+        constructor(_elem)
+        {
+            this.cursorOffset = 600;
+            
+            window.addEventListener(
+                'mousemove',
+                (_evt) => {
+                    this.cursorOffset = _evt.clientX;
+                }
+            );
+            
+            this.seedCloud(_elem, 20);
+        }
+
+        numberGen = (_range) => parseFloat((Math.random() * _range).toFixed(2));
+        
+        seedCloud(_elem, dropCount)
+        {
+            Array(dropCount).fill().map(
+                () => {
+                    setTimeout(
+                        () => {
+                            let droplet = document.createElement('div'),
+                                seed = this.numberGen(10);
+
+                            droplet.className = 'drop';
+                            droplet.style.left = (45 + seed) + 'vw';
+                            droplet.style.opacity = (1 - seed / 15).toFixed(2).toString();
+
+                            droplet.addEventListener(
+                                'animationiteration',
+                                (_elem) => { _elem.currentTarget.style.left = (this.cursorOffset - 50 + seed * 10) + 'px'; },
+                                false
+                            );
+
+                            _elem.insertAdjacentElement('beforeend', droplet);
+                        },
+                        Math.floor(Math.random() * 4000 + 2000)
+                    );
+                }
+            );
+        }
+    }
+    
+    </script>
+</head>
+<body>
+    <div id="sky"></div>
+    <script>
+
+    let shower = new IsolatedShower(document.querySelector('#sky'));
+    
+    </script>
+</body>
+</html>
